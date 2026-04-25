@@ -1,13 +1,12 @@
 name: registry
 version: '0.1'
-summary: Docker registry
+summary: CNCF Distribution Registry packaged as a snap
 description: |
-  Docker registry
+  [CNCF Distribution Registry](https://github.com/distribution/distribution/) packaged as a snap.
 
 grade: stable
 confinement: strict
 
-# type: base
 base: core24
 
 parts:
@@ -17,7 +16,7 @@ parts:
   registry:
     plugin: go
     source-type: git
-    source: https://github.com/docker/distribution
+    source: https://github.com/distribution/distribution/
     build-environment:
     - CGO_ENABLED: "0"
     build-snaps:
