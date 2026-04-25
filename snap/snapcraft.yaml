@@ -8,7 +8,7 @@ grade: stable
 confinement: strict
 
 # type: base
-base: core18
+base: core24
 
 parts:
   misc:
@@ -20,6 +20,8 @@ parts:
     source: https://github.com/docker/distribution
     build-environment:
     - CGO_ENABLED: "0"
+    build-snaps:
+      - go
     prime:
     - bin/registry
 
