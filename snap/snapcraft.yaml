@@ -13,7 +13,9 @@ confinement: strict
 
 base: core24
 
-# TODO: add support for arm64 architecture/platform
+platforms:
+  amd64:
+  arm64:
 
 parts:
   misc:
