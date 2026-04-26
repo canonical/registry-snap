@@ -19,6 +19,7 @@ jobs:
 
   release:
     name: Release snap to Snap Store branch
+    # Be sure this is restricted to internal users
     if: github.event.pull_request.head.repo.full_name == github.repository
     needs:
       - build
