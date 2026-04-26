@@ -1,6 +1,6 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
-name: Release to Snap Store Edge Branch
+name: Release to Snap Store edge branch
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
