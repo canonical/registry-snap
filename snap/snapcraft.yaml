@@ -1,7 +1,6 @@
 name: registry
 title: OCI Image Registry
-# TODO: update to match registry version
-version: '0.1'
+version: '3.1.0'
 summary: OCI Image Registry (from CNCF Distribution) packaged as a snap
 description: |
   [CNCF Distribution Registry](https://github.com/distribution/distribution/) packaged as a snap.
@@ -13,7 +12,9 @@ confinement: strict
 
 base: core24
 
-# TODO: add support for arm64 architecture/platform
+platforms:
+  amd64:
+  arm64:
 
 parts:
   misc:
@@ -22,14 +23,15 @@ parts:
   registry:
     plugin: go
     source-type: git
-    # TODO: pin to a version
-    source: https://github.com/distribution/distribution/
+    source: https://github.com/distribution/distribution
+    source-tag: v3.1.0
     build-environment:
-    - CGO_ENABLED: "0"
+      - CGO_ENABLED: "0"
+      - GOTOOLCHAIN: local
     build-snaps:
-      - go
+      - go/1.25/stable
     prime:
-    - bin/registry
+      - bin/registry
 
 apps:
   registry:
