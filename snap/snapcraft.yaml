@@ -1,7 +1,7 @@
 name: registry
 title: OCI Image Registry
 # TODO: update to match registry version
-version: '0.1'
+version: '0.2'
 summary: OCI Image Registry (from CNCF Distribution) packaged as a snap
 description: |
   [CNCF Distribution Registry](https://github.com/distribution/distribution/) packaged as a snap.
