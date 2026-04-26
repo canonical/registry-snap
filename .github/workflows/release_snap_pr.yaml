@@ -19,6 +19,7 @@ jobs:
 
   release:
     name: Release snap to Snap Store branch
+    if: github.event.pull_request.head.repo.full_name == github.repository
     needs:
       - build
     uses: canonical/data-platform-workflows/.github/workflows/release_snap_pr.yaml@v49.0.0
