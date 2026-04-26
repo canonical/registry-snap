@@ -28,7 +28,7 @@ parts:
     build-environment:
     - CGO_ENABLED: "0"
     build-snaps:
-      - go
+      - go/1.26/stable
     prime:
     - bin/registry
 
