@@ -9,7 +9,9 @@ log:
   fields:
     service: registry
 http:
-  addr: ':5000'
+  addr: :5000
+  headers:
+    X-Content-Type-Options: [nosniff]
 storage:
   filesystem:
     rootdirectory: '${SNAP_COMMON}/data'
