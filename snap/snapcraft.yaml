@@ -23,7 +23,8 @@ parts:
   registry:
     plugin: go
     source-type: git
-    source: https://github.com/distribution/distribution/tree/v3.1.0
+    source: https://github.com/distribution/distribution
+    source-tag: v3.1.0
     build-environment:
     - CGO_ENABLED: "0"
     build-snaps:
