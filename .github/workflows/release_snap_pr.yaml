@@ -1,0 +1,26 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+on:
+  pull_request:
+
+jobs:
+  build:
+    name: Build snap
+    uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v49.0.0
+    permissions:
+      actions: read  # Needed for GitHub API call to get workflow version
+      contents: read
+
+  release:
+    name: Release snap to Snap Store branch
+    needs:
+      - build
+    uses: canonical/data-platform-workflows/.github/workflows/release_snap_pr.yaml@v49.0.0
+    with:
+      track: 'latest'
+      artifact-prefix: ${{ needs.build.outputs.artifact-prefix }}
+    secrets:
+      snap-store-token: ${{ secrets.SNAP_STORE_TOKEN_EDGE_PR }}
+    permissions:
+      actions: read  # Needed for GitHub API call to get workflow version
+      contents: read
