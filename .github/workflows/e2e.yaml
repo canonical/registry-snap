@@ -1,0 +1,43 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+name: E2E tests
+
+on:
+  workflow_call:
+    inputs:
+      artifact-prefix:
+        description: Snap artifact prefix from build job
+        required: true
+        type: string
+
+jobs:
+  e2e:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read  # Needed to download workflow artifacts
+    steps:
+      - name: Download snap artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ${{ inputs.artifact-prefix }}-amd64
+          merge-multiple: true
+
+      - name: Install registry snap
+        run: sudo snap install --dangerous ./*.snap
+
+      - name: Set up docker
+        run: |
+          sudo snap install docker
+          sudo addgroup --system docker
+          sudo adduser $USER docker
+          sudo snap restart docker
+          timeout 60 sh -c 'until sg docker -c "docker info" > /dev/null 2>&1; do sleep 1; done'
+
+      - name: Clone distribution repository
+        run: git clone --branch v3.1.0 --depth 1 https://github.com/distribution/distribution
+
+      - name: Run e2e tests
+        run: |
+          cd distribution
+          sg docker -c "bash ./tests/push.sh 127.0.0.0"

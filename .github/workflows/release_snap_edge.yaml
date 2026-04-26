@@ -19,10 +19,21 @@ jobs:
       actions: read  # Needed for GitHub API call to get workflow version
       contents: read
 
+  e2e:
+    name: E2E tests
+    needs:
+      - build
+    uses: ./.github/workflows/e2e.yaml
+    with:
+      artifact-prefix: ${{ needs.build.outputs.artifact-prefix }}
+    permissions:
+      actions: read
+
   release:
     name: Release snap
     needs:
       - build
+      - e2e
     uses: canonical/data-platform-workflows/.github/workflows/release_snap_edge.yaml@df6c1fd905a8fdc5db0771f35edf92d1a108020a  # v49.0.0
     with:
       track: 'latest'
