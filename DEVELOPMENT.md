@@ -23,7 +23,6 @@ snapcraft export-login --snaps registry --channels latest/edge --expires 2026-10
 
 # TODO
 - Publish to 3.1 tracks
-- Finish tweaking listing
 - Review by other humans
 - Require action pinning in repo settings once https://github.com/canonical/data-platform-workflows/issues/368 is fixed
 - Pin all actions
