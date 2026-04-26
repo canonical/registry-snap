@@ -1,0 +1,80 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+name: E2E tests
+
+on:
+  workflow_call:
+    inputs:
+      artifact-prefix:
+        description: Snap artifact prefix from build job
+        required: true
+        type: string
+
+jobs:
+  collect-platforms:
+    name: Collect platforms
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      platforms: ${{ steps.collect.outputs.platforms }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Collect platforms from snapcraft.yaml
+        id: collect
+        run: |
+          pip install --quiet pyyaml
+          python3 - << 'EOF'
+          import yaml, json, os, sys
+          runner_map = {"amd64": "ubuntu-24.04", "arm64": "ubuntu-24.04-arm"}
+          with open("snap/snapcraft.yaml") as f:
+              data = yaml.safe_load(f)
+          platforms = list(data.get("platforms", {}).keys())
+          matrix = []
+          for p in platforms:
+              if p not in runner_map:
+                  print(f"Error: no runner defined for platform '{p}'", file=sys.stderr)
+                  sys.exit(1)
+              matrix.append({"arch": p, "runner": runner_map[p]})
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              out.write(f"platforms={json.dumps(matrix)}\n")
+          EOF
+
+  e2e:
+    name: E2E tests | ${{ matrix.arch }}
+    needs: collect-platforms
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      actions: read  # Needed to download workflow artifacts
+      contents: read
+    strategy:
+      matrix:
+        include: ${{ fromJSON(needs.collect-platforms.outputs.platforms) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Download snap artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ${{ inputs.artifact-prefix }}*--platform-${{ matrix.arch }}
+          merge-multiple: true
+
+      - name: Install registry snap
+        run: sudo snap install --dangerous ./*.snap
+
+      - name: Set up docker
+        run: |
+          sudo snap install docker
+          sudo addgroup --system docker
+          sudo adduser $USER docker
+          sudo snap restart docker
+          timeout 60 sh -c 'until sg docker -c "docker info" > /dev/null 2>&1; do sleep 1; done'
+
+      - name: Run e2e tests
+        run: sg docker -c "bash ./tests/push.sh 127.0.0.0"

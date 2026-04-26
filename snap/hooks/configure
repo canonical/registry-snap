@@ -2,7 +2,7 @@
 
 "${SNAP}/bin/mkdir" -p "$SNAP_COMMON/data"
 
-if ! -f "${SNAP_COMMON}/config.yaml"; then
+if [ ! -f "${SNAP_COMMON}/config.yaml" ]; then
 	echo "---
 version: 0.1
 log:
