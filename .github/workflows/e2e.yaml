@@ -12,15 +12,22 @@ on:
 
 jobs:
   e2e:
-    name: E2E tests
-    runs-on: ubuntu-latest
+    name: E2E tests | ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
     permissions:
       actions: read  # Needed to download workflow artifacts
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Download snap artifact
         uses: actions/download-artifact@v4
         with:
-          pattern: ${{ inputs.artifact-prefix }}-amd64
+          pattern: ${{ inputs.artifact-prefix }}*--platform-${{ matrix.arch }}
           merge-multiple: true
 
       - name: Install registry snap
@@ -35,7 +42,7 @@ jobs:
           timeout 60 sh -c 'until sg docker -c "docker info" > /dev/null 2>&1; do sleep 1; done'
 
       - name: Clone distribution repository
-        run: git clone --branch v3.1.0 --depth 1 https://github.com/distribution/distribution
+        run: git clone --depth 1 --branch v3.1.0 https://github.com/distribution/distribution
 
       - name: Run e2e tests
         run: |
