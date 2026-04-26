@@ -26,6 +26,7 @@ jobs:
       artifact-prefix: ${{ needs.build.outputs.artifact-prefix }}
     permissions:
       actions: read
+      content: read
 
   release:
     name: Release snap to Snap Store branch
