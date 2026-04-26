@@ -1,9 +1,10 @@
 name: registry
 title: OCI Image Registry
 version: '3.1.0'
-summary: OCI Image Registry (from CNCF Distribution) packaged as a snap
+summary: Local OCI Image Registry (from CNCF Distribution) packaged as a snap
 description: |
-  [CNCF Distribution Registry](https://github.com/distribution/distribution/) packaged as a snap.
+  [CNCF Distribution Registry](https://github.com/distribution/distribution/) configured
+  to run locally and packaged as a snap.
 source-code: https://github.com/canonical/registry-snap
 # TODO: define license
 
