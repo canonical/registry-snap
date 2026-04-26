@@ -28,7 +28,7 @@ jobs:
       artifact-prefix: ${{ needs.build.outputs.artifact-prefix }}
     permissions:
       actions: read
-      content: read
+      contents: read
 
   release:
     name: Release snap
