@@ -6,7 +6,7 @@ description: |
   Simple snap package to set up a local OCI image registry using the CNCF
   Distribution project from https://github.com/distribution/distribution/.
 source-code: https://github.com/canonical/registry-snap
-# TODO: define license
+license: Apache-2.0
 
 grade: stable
 confinement: strict
