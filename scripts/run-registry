@@ -1,3 +1,10 @@
 #!/bin/bash
 
-"${SNAP}/bin/registry" serve "${SNAP_COMMON}/config.yaml"
+set -eu
+
+if [ ! -f "${SNAP_COMMON}/config.yaml" ]; then
+    echo "error: config file not found at ${SNAP_COMMON}/config.yaml" >&2
+    exit 1
+fi
+
+exec "${SNAP}/bin/registry" serve "${SNAP_COMMON}/config.yaml"
