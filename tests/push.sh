@@ -2,9 +2,15 @@
 
 set +e
 
+if [ -z "$1" ]; then
+    echo "Usage: $0 <registry-host>"
+    exit 1
+fi
+
+REGISTRY="$1"
 TIMEOUT=5
 while [ $TIMEOUT -gt 0 ]; do
-    STATUS=$(curl --insecure -s -o /dev/null -w '%{http_code}' http://localhost:5000/v2/)
+    STATUS=$(curl -s -o /dev/null -w '%{http_code}' "http://${REGISTRY}:5000/v2/")
     echo $STATUS
     if [ $STATUS -eq 200 ] || [ $STATUS -eq 401 ]; then
         break
@@ -21,6 +27,6 @@ fi
 set -e
 
 docker pull hello-world:latest
-docker tag hello-world:latest $1:5000/distribution/hello-world:latest
-docker push $1:5000/distribution/hello-world:latest
-docker pull $1:5000/distribution/hello-world:latest
+docker tag hello-world:latest "${REGISTRY}:5000/distribution/hello-world:latest"
+docker push "${REGISTRY}:5000/distribution/hello-world:latest"
+docker pull "${REGISTRY}:5000/distribution/hello-world:latest"
