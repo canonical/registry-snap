@@ -1,6 +1,8 @@
 #!/bin/bash
 
-"${SNAP}/bin/mkdir" -p "$SNAP_COMMON/data"
+set -e
+
+mkdir -p "$SNAP_COMMON/data"
 
 if [ ! -f "${SNAP_COMMON}/config.yaml" ]; then
 	echo "---
