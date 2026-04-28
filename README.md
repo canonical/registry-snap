@@ -1,6 +1,6 @@
 # Registry snap
 
-This is a snapcraft package for [Docker Registry](https://github.com/docker/distribution)
+This is a snapcraft package for [CNCF Distribution](https://github.com/distribution/distribution) (OCI image registry)
 
 ## Usage
 
