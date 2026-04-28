@@ -77,4 +77,4 @@ jobs:
           timeout 60 sh -c 'until sg docker -c "docker info" > /dev/null 2>&1; do sleep 1; done'
 
       - name: Run e2e tests
-        run: sg docker -c "bash ./tests/push.sh 127.0.0.0"
+        run: sg docker -c "bash ./tests/push.sh 127.0.0.1"
