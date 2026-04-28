@@ -1,0 +1,74 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+name: Release to Snap Store track edge
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    tags:
+      - '[0-9]*.[0-9]*.[0-9]*'
+  workflow_dispatch:
+
+jobs:
+  validate-tag:
+    name: Validate tag
+    runs-on: ubuntu-24.04
+    outputs:
+      track: ${{ steps.parse.outputs.track }}
+    steps:
+      - name: Validate ref is a tag
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [[ "${{ github.ref_type }}" != "tag" ]]; then
+            echo "Error: workflow_dispatch must be run on a tag ref"
+            exit 1
+          fi
+      - name: Parse and validate tag
+        id: parse
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ ! "$TAG" =~ ^([0-9]+)\.([0-9]+)\.[0-9]+$ ]]; then
+            echo "Error: tag '$TAG' does not match expected format X.Y.Z"
+            exit 1
+          fi
+          TRACK="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+          echo "track=$TRACK" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build snap
+    needs:
+      - validate-tag
+    uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@df6c1fd905a8fdc5db0771f35edf92d1a108020a  # v49.0.0
+    permissions:
+      actions: read  # Needed for GitHub API call to get workflow version
+      contents: read
+
+  e2e:
+    name: E2E tests
+    needs:
+      - build
+    uses: ./.github/workflows/e2e.yaml
+    with:
+      artifact-prefix: ${{ needs.build.outputs.artifact-prefix }}
+    permissions:
+      actions: read
+      contents: read
+
+  release:
+    name: Release snap
+    needs:
+      - validate-tag
+      - build
+      - e2e
+    uses: canonical/data-platform-workflows/.github/workflows/release_snap_edge.yaml@df6c1fd905a8fdc5db0771f35edf92d1a108020a  # v49.0.0
+    with:
+      track: ${{ needs.validate-tag.outputs.track }}
+      artifact-prefix: ${{ needs.build.outputs.artifact-prefix }}
+    secrets:
+      snap-store-token: ${{ secrets.SNAP_STORE_TOKEN_EDGE }}
+    permissions:
+      actions: read  # Needed for GitHub API call to get workflow version
+      contents: write  # Needed to create git tags
